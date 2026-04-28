@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git push --no-verify:*)",
+      "Bash(git commit --no-verify:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean -fd:*)",
+      "Bash(rm -rf /:*)"
+    ],
+    "allow": [
+      "Bash(git worktree:*)",
+      "Bash(git lfs:*)",
+      "Bash(gh pr:*)",
+      "Bash(gh issue:*)",
+      "Bash(gh api:*)",
+      "Bash(python3 -m http.server:*)",
+      "Bash(python3 .claude/scripts/screenshot_diff.py:*)"
+    ]
+  }
+}

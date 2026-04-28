@@ -1,0 +1,14 @@
+# 1 MB 以上のメディア類は LFS で扱う(.claude/CLAUDE.md 参照)
+*.png   filter=lfs diff=lfs merge=lfs -text
+*.jpg   filter=lfs diff=lfs merge=lfs -text
+*.jpeg  filter=lfs diff=lfs merge=lfs -text
+*.webp  filter=lfs diff=lfs merge=lfs -text
+*.gif   filter=lfs diff=lfs merge=lfs -text
+*.mp4   filter=lfs diff=lfs merge=lfs -text
+*.webm  filter=lfs diff=lfs merge=lfs -text
+*.mov   filter=lfs diff=lfs merge=lfs -text
+*.woff2 filter=lfs diff=lfs merge=lfs -text
+*.woff  filter=lfs diff=lfs merge=lfs -text
+
+# Studio.design は拡張子なしの UUID 名で画像を配信するため、
+# サイズベースで弾く pre-commit hook (.git/hooks/pre-commit) を併用する。
