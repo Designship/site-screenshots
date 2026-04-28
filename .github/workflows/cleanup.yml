@@ -1,0 +1,53 @@
+name: Cleanup closed-PR screenshots
+
+on:
+  schedule:
+    - cron: "0 2 * * *"   # 毎日 02:00 UTC = JST 11:00
+  workflow_dispatch:        # 手動でも実行できるように
+
+permissions:
+  contents: write           # このリポへの push 権限
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove screenshot dirs for closed PRs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          changed=0
+          shopt -s nullglob
+          for site_dir in site-*/; do
+            site="${site_dir%/}"
+            for prdir in "${site}"/pr-*/; do
+              [ -d "$prdir" ] || continue
+              prnum="${prdir#${site}/pr-}"
+              prnum="${prnum%/}"
+              # Look up the PR state in the parent repo. If it's merged, closed,
+              # or doesn't exist, drop the screenshot dir.
+              state=$(gh pr view "$prnum" --repo "Designship/$site" --json state -q .state 2>/dev/null || echo "MISSING")
+              case "$state" in
+                MERGED|CLOSED|MISSING)
+                  echo "removing $prdir (state=$state)"
+                  rm -rf "$prdir"
+                  changed=1
+                  ;;
+                *)
+                  echo "keeping  $prdir (state=$state)"
+                  ;;
+              esac
+            done
+          done
+          if [ "$changed" = "1" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "Cleanup screenshots for closed/merged PRs"
+            git push
+          else
+            echo "nothing to clean"
+          fi
